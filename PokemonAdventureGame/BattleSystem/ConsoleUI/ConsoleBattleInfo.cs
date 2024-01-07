@@ -7,6 +7,10 @@ namespace PokemonAdventureGame.BattleSystem.ConsoleUI
 {
     public static class ConsoleBattleInfo
     {
+        public static readonly ConsoleColor AttackColor = ConsoleColor.White;
+        public static readonly ConsoleColor SpecialAttackColor = ConsoleColor.Yellow;
+        public static readonly ConsoleColor UnavailableMove = ConsoleColor.DarkGray;
+
         public static void ShowAvailableCommandsOnConsole()
         {
             Console.WriteLine($"{(int)Command.ATTACK}: {Command.ATTACK}");
@@ -18,6 +22,8 @@ namespace PokemonAdventureGame.BattleSystem.ConsoleUI
         {
             ConsoleUtils.ShowMessageBetweenEmptyLines("Choose your attack!");
 
+            ConsoleColor previousColor = Console.ForegroundColor;
+
             int maxMoveNameLength = pokemon.Moves.Max(m => m.GetType().Name.Length);
             int maxTypeNameLength = pokemon.Moves.Max(m => m.Type.ToString().Length) + 2;
             for (int i = 0; i < pokemon.Moves.Count; i++)
@@ -26,8 +32,16 @@ namespace PokemonAdventureGame.BattleSystem.ConsoleUI
                 string typeName = $"[{move.Type}]".PadRight(maxTypeNameLength);
                 string moveName = move.GetType().Name.PadRight(maxMoveNameLength);
 
-                Console.WriteLine($"{i}: {typeName} {moveName}   {move.CurrentPowerPoints}/{move.PowerPoints}");
+                Console.ForegroundColor = move.Special ? SpecialAttackColor : AttackColor;
+                if (move.CurrentPowerPoints <= 0)
+                {
+                    Console.ForegroundColor = UnavailableMove;
             }
+
+                Console.WriteLine($"{i}: {typeName} {moveName}   {move.CurrentPowerPoints}/{move.PowerPoints}");
+        }
+
+            Console.ForegroundColor = previousColor;
         }
 
         public static void WriteAllAvailableItemsOnConsole(ITrainer player)
